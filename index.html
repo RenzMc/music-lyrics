@@ -1,5 +1,6 @@
+
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="light">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -14,6 +15,7 @@
         }
 
         :root {
+            /* Light Theme Colors */
             --primary: #6c63ff;
             --primary-dark: #5a52d5;
             --secondary: #ff6584;
@@ -23,8 +25,35 @@
             --warning: #fdcb6e;
             --danger: #d63031;
             --gray: #636e72;
+            --bg-main: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            --bg-card: rgba(255, 255, 255, 0.8);
+            --text-primary: #2d3436;
+            --text-secondary: #636e72;
+            --border-color: rgba(255, 255, 255, 0.2);
+            --shadow-color: rgba(0, 0, 0, 0.1);
+            --sidebar-bg: rgba(255, 255, 255, 0.1);
             --sidebar-width: 280px;
             --sidebar-collapsed: 80px;
+        }
+
+        /* Dark Theme Colors */
+        html[data-theme='dark'] {
+            --primary: #8983ff;
+            --primary-dark: #6c63ff;
+            --secondary: #ff7a97;
+            --dark: #f5f6fa;
+            --light: #1e272e;
+            --success: #00d1ab;
+            --warning: #ffeaa7;
+            --danger: #ff6b6b;
+            --gray: #a4b0be;
+            --bg-main: linear-gradient(135deg, #1e272e 0%, #2d3436 100%);
+            --bg-card: rgba(30, 39, 46, 0.8);
+            --text-primary: #f5f6fa;
+            --text-secondary: #a4b0be;
+            --border-color: rgba(0, 0, 0, 0.2);
+            --shadow-color: rgba(0, 0, 0, 0.3);
+            --sidebar-bg: rgba(0, 0, 0, 0.2);
         }
 
         @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
@@ -34,13 +63,14 @@
             width: 100%;
             overflow-x: hidden;
             background-color: var(--light);
-            color: var(--dark);
+            color: var(--text-primary);
             scroll-behavior: smooth;
+            transition: all 0.3s ease;
         }
 
         body {
             perspective: 1000px;
-            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            background: var(--bg-main);
         }
 
         /* === 3D PARALLAX EFFECTS === */
@@ -95,15 +125,15 @@
         .sidebar {
             width: var(--sidebar-width);
             height: 100%;
-            background: rgba(255, 255, 255, 0.1);
+            background: var(--sidebar-bg);
             backdrop-filter: blur(10px);
-            border-right: 1px solid rgba(255, 255, 255, 0.2);
+            border-right: 1px solid var(--border-color);
             position: fixed;
             left: 0;
             top: 0;
             z-index: 100;
             transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            box-shadow: 5px 0 15px rgba(0, 0, 0, 0.05);
+            box-shadow: 5px 0 15px var(--shadow-color);
             padding: 20px 0;
             display: flex;
             flex-direction: column;
@@ -157,7 +187,7 @@
             justify-content: center;
             color: white;
             cursor: pointer;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 2px 5px var(--shadow-color);
             z-index: 101;
             transition: transform 0.3s ease;
         }
@@ -180,7 +210,7 @@
             display: flex;
             align-items: center;
             padding: 12px 20px;
-            color: var(--dark);
+            color: var(--text-primary);
             text-decoration: none;
             transition: all 0.3s ease;
             border-left: 3px solid transparent;
@@ -215,10 +245,10 @@
         .sidebar-footer {
             margin-top: auto;
             padding: 20px;
-            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            border-top: 1px solid var(--border-color);
             font-size: 12px;
             text-align: center;
-            color: var(--gray);
+            color: var(--text-secondary);
         }
 
         .sidebar.collapsed .sidebar-footer {
@@ -233,7 +263,7 @@
         }
 
         .social-link {
-            color: var(--gray);
+            color: var(--text-secondary);
             text-decoration: none;
             transition: color 0.3s ease;
         }
@@ -270,21 +300,21 @@
         }
 
         .upload-container {
-            background: rgba(255, 255, 255, 0.8);
+            background: var(--bg-card);
             backdrop-filter: blur(10px);
             border-radius: 20px;
             padding: 40px;
             width: 100%;
             max-width: 600px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 10px 30px var(--shadow-color);
             transform: translateZ(20px);
             transition: all 0.3s ease;
-            border: 1px solid rgba(255, 255, 255, 0.2);
+            border: 1px solid var(--border-color);
         }
 
         .upload-container:hover {
             transform: translateZ(30px) scale(1.02);
-            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
+            box-shadow: 0 15px 40px var(--shadow-color);
         }
 
         .upload-title {
@@ -295,7 +325,7 @@
         }
 
         .upload-description {
-            color: var(--gray);
+            color: var(--text-secondary);
             margin-bottom: 30px;
             font-size: 16px;
             line-height: 1.6;
@@ -323,7 +353,7 @@
 
         .file-msg {
             font-size: 18px;
-            color: var(--gray);
+            color: var(--text-secondary);
             transition: all 0.3s ease;
         }
 
@@ -387,9 +417,13 @@
             align-items: center;
             margin-top: 15px;
             padding: 10px;
-            background: rgba(255, 255, 255, 0.5);
+            background: rgba(255, 255, 255, 0.2);
             border-radius: 8px;
             display: none;
+        }
+
+        html[data-theme='dark'] .file-info {
+            background: rgba(0, 0, 0, 0.2);
         }
 
         .file-info.show {
@@ -409,7 +443,7 @@
 
         .file-name {
             font-weight: 500;
-            color: var(--dark);
+            color: var(--text-primary);
             margin-bottom: 2px;
             white-space: nowrap;
             overflow: hidden;
@@ -419,7 +453,7 @@
 
         .file-size {
             font-size: 12px;
-            color: var(--gray);
+            color: var(--text-secondary);
         }
 
         .file-remove {
@@ -452,6 +486,10 @@
             opacity: 0;
             visibility: hidden;
             transition: all 0.5s ease;
+        }
+
+        html[data-theme='dark'] .loading-section {
+            background: rgba(30, 39, 46, 0.9);
         }
 
         .loading-section.show {
@@ -505,7 +543,7 @@
         }
 
         .loading-text {
-            color: var(--gray);
+            color: var(--text-secondary);
             font-size: 16px;
             margin-top: 20px;
         }
@@ -517,6 +555,10 @@
             border-radius: 3px;
             margin-top: 20px;
             overflow: hidden;
+        }
+
+        html[data-theme='dark'] .loading-progress {
+            background: rgba(255, 255, 255, 0.1);
         }
 
         .loading-bar {
@@ -568,12 +610,12 @@
         }
 
         .lyrics-player {
-            background: rgba(255, 255, 255, 0.8);
+            background: var(--bg-card);
             backdrop-filter: blur(10px);
             border-radius: 20px;
             padding: 30px;
             margin-bottom: 30px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 10px 30px var(--shadow-color);
             position: relative;
             overflow: hidden;
         }
@@ -610,13 +652,13 @@
 
         .audio-name {
             font-weight: 600;
-            color: var(--dark);
+            color: var(--text-primary);
             margin-bottom: 5px;
         }
 
         .audio-duration {
             font-size: 12px;
-            color: var(--gray);
+            color: var(--text-secondary);
         }
 
         .player-controls {
@@ -630,7 +672,7 @@
             border: none;
             cursor: pointer;
             font-size: 18px;
-            color: var(--dark);
+            color: var(--text-primary);
             transition: all 0.2s ease;
         }
 
@@ -664,6 +706,10 @@
             position: relative;
         }
 
+        html[data-theme='dark'] .progress-container {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
         .progress-bar {
             height: 100%;
             width: 0;
@@ -682,7 +728,7 @@
             top: 50%;
             transform: translate(-50%, -50%);
             left: 0;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 2px 5px var(--shadow-color);
             transition: left 0.1s linear;
         }
 
@@ -690,7 +736,7 @@
             display: flex;
             justify-content: space-between;
             font-size: 12px;
-            color: var(--gray);
+            color: var(--text-secondary);
             margin-top: 5px;
         }
 
@@ -698,10 +744,14 @@
             height: 300px;
             overflow-y: auto;
             padding: 20px;
-            background: rgba(255, 255, 255, 0.5);
+            background: rgba(255, 255, 255, 0.2);
             border-radius: 10px;
             margin-top: 20px;
             position: relative;
+        }
+
+        html[data-theme='dark'] .lyrics-container {
+            background: rgba(0, 0, 0, 0.2);
         }
 
         /* === LYRICS ANIMATION STYLES === */
@@ -709,7 +759,7 @@
         .lyrics-line {
             padding: 10px 0;
             font-size: 18px;
-            color: var(--gray);
+            color: var(--text-secondary);
             transition: all 0.3s ease;
             opacity: 0.6;
         }
@@ -725,14 +775,14 @@
         .lyrics-container.style-spotify .lyrics-line {
             padding: 12px 0;
             font-size: 20px;
-            color: rgba(45, 52, 54, 0.6);
+            color: var(--text-secondary);
             transition: all 0.3s ease;
             opacity: 0.6;
             text-align: center;
         }
 
         .lyrics-container.style-spotify .lyrics-line.active {
-            color: var(--dark);
+            color: var(--text-primary);
             font-weight: 700;
             font-size: 24px;
             opacity: 1;
@@ -742,14 +792,14 @@
         .lyrics-container.style-karaoke .lyrics-line {
             padding: 10px 0;
             font-size: 20px;
-            color: var(--gray);
+            color: var(--text-secondary);
             transition: all 0.3s ease;
             opacity: 0.7;
             position: relative;
         }
 
         .lyrics-container.style-karaoke .lyrics-line.active {
-            color: var(--dark);
+            color: var(--text-primary);
             font-weight: 600;
             font-size: 22px;
             opacity: 1;
@@ -765,14 +815,14 @@
         .lyrics-container.style-typing .lyrics-line {
             padding: 10px 0;
             font-size: 20px;
-            color: var(--gray);
+            color: var(--text-secondary);
             transition: all 0.3s ease;
             opacity: 0.7;
             border-right: 0px solid transparent;
         }
 
         .lyrics-container.style-typing .lyrics-line.active {
-            color: var(--dark);
+            color: var(--text-primary);
             font-weight: 600;
             font-size: 22px;
             opacity: 1;
@@ -791,7 +841,7 @@
         .lyrics-container.style-wave .lyrics-line {
             padding: 10px 0;
             font-size: 20px;
-            color: var(--gray);
+            color: var(--text-secondary);
             transition: all 0.3s ease;
             opacity: 0.7;
         }
@@ -818,7 +868,7 @@
         .lyrics-container.style-3d .lyrics-line {
             padding: 10px 0;
             font-size: 20px;
-            color: var(--gray);
+            color: var(--text-secondary);
             transition: all 0.3s ease;
             opacity: 0.7;
             transform: perspective(500px) rotateX(0);
@@ -843,30 +893,54 @@
             transform-origin: center top;
         }
 
+        html[data-theme='dark'] .lyrics-container.style-3d .lyrics-line.active {
+            text-shadow: 0 1px 0 #555, 
+                        0 2px 0 #444,
+                        0 3px 0 #333,
+                        0 4px 0 #222,
+                        0 5px 0 #111,
+                        0 6px 1px rgba(0,0,0,.3),
+                        0 0 5px rgba(0,0,0,.3),
+                        0 1px 3px rgba(0,0,0,.5),
+                        0 3px 5px rgba(0,0,0,.4),
+                        0 5px 10px rgba(0,0,0,.5);
+        }
+
         .lyrics-text {
-            background: white;
+            background: var(--bg-card);
             border-radius: 10px;
             padding: 20px;
             margin-top: 30px;
             min-height: 200px;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            box-shadow: 0 5px 15px var(--shadow-color);
         }
 
         .lyrics-text-content {
             white-space: pre-wrap;
             line-height: 1.6;
-            color: var(--dark);
+            color: var(--text-primary);
         }
 
         /* === SETTINGS PANEL === */
+        .settings-section {
+            display: none;
+            padding: 40px 20px;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .settings-section.show {
+            display: block;
+        }
+
         .settings-panel {
-            background: rgba(255, 255, 255, 0.9);
+            background: var(--bg-card);
             backdrop-filter: blur(10px);
             border-radius: 20px;
             padding: 20px;
             margin-bottom: 20px;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 5px 15px var(--shadow-color);
+            border: 1px solid var(--border-color);
         }
 
         .settings-title {
@@ -886,7 +960,7 @@
         .settings-label {
             font-size: 14px;
             font-weight: 500;
-            color: var(--dark);
+            color: var(--text-primary);
             margin-bottom: 8px;
         }
 
@@ -898,12 +972,17 @@
 
         .animation-option {
             padding: 8px 16px;
-            background: rgba(255, 255, 255, 0.5);
-            border: 1px solid rgba(0, 0, 0, 0.1);
+            background: rgba(255, 255, 255, 0.2);
+            border: 1px solid var(--border-color);
             border-radius: 20px;
             font-size: 14px;
             cursor: pointer;
             transition: all 0.2s ease;
+            color: var(--text-primary);
+        }
+
+        html[data-theme='dark'] .animation-option {
+            background: rgba(0, 0, 0, 0.2);
         }
 
         .animation-option:hover {
@@ -916,13 +995,247 @@
             border-color: var(--primary);
         }
 
-        .settings-section {
-            display: none;
-            margin-top: 20px;
+        /* === THEME TOGGLE === */
+        .theme-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+            width: 50px;
+            height: 26px;
+            background: var(--bg-card);
+            border-radius: 13px;
+            cursor: pointer;
+            box-shadow: 0 2px 5px var(--shadow-color);
+            display: flex;
+            align-items: center;
+            padding: 0 5px;
+            transition: all 0.3s ease;
         }
 
-        .settings-section.show {
+        .theme-toggle-track {
+            position: relative;
+            width: 100%;
+            height: 16px;
+            background: rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+        }
+
+        html[data-theme='dark'] .theme-toggle-track {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .theme-toggle-thumb {
+            position: absolute;
+            top: 50%;
+            left: 2px;
+            transform: translateY(-50%);
+            width: 20px;
+            height: 20px;
+            background: white;
+            border-radius: 50%;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #f39c12;
+        }
+
+        html[data-theme='dark'] .theme-toggle-thumb {
+            left: calc(100% - 22px);
+            background: #2d3436;
+            color: #f1c40f;
+        }
+
+        /* === LYRICS EDIT MODAL === */
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .modal.show {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal-content {
+            background: var(--bg-card);
+            border-radius: 20px;
+            padding: 30px;
+            width: 90%;
+            max-width: 700px;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 10px 30px var(--shadow-color);
+            transform: translateY(-20px);
+            transition: all 0.3s ease;
+        }
+
+        .modal.show .modal-content {
+            transform: translateY(0);
+        }
+
+        .modal-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+
+        .modal-title {
+            font-size: 24px;
+            font-weight: 600;
+            color: var(--primary);
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 24px;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .modal-close:hover {
+            color: var(--danger);
+        }
+
+        .modal-body {
+            margin-bottom: 20px;
+        }
+
+        .lyrics-editor {
+            width: 100%;
+            height: 300px;
+            padding: 15px;
+            border-radius: 10px;
+            border: 1px solid var(--border-color);
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--text-primary);
+            font-family: 'Poppins', sans-serif;
+            font-size: 16px;
+            line-height: 1.6;
+            resize: vertical;
+        }
+
+        html[data-theme='dark'] .lyrics-editor {
+            background: rgba(0, 0, 0, 0.2);
+        }
+
+        .lyrics-editor:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 2px rgba(108, 99, 255, 0.2);
+        }
+
+        .modal-footer {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+
+        /* === AI LYRICS SEARCH === */
+        .ai-search {
+            margin-top: 20px;
+            padding: 15px;
+            background: rgba(108, 99, 255, 0.1);
+            border-radius: 10px;
+            border: 1px solid var(--border-color);
+        }
+
+        .ai-search-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--primary);
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .ai-search-form {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .ai-search-input {
+            flex: 1;
+            padding: 10px 15px;
+            border-radius: 10px;
+            border: 1px solid var(--border-color);
+            background: rgba(255, 255, 255, 0.2);
+            color: var(--text-primary);
+            font-family: 'Poppins', sans-serif;
+        }
+
+        html[data-theme='dark'] .ai-search-input {
+            background: rgba(0, 0, 0, 0.2);
+        }
+
+        .ai-search-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 2px rgba(108, 99, 255, 0.2);
+        }
+
+        .ai-search-results {
+            max-height: 200px;
+            overflow-y: auto;
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            margin-top: 10px;
+            display: none;
+        }
+
+        html[data-theme='dark'] .ai-search-results {
+            background: rgba(0, 0, 0, 0.1);
+        }
+
+        .ai-search-results.show {
             display: block;
+        }
+
+        .ai-result-item {
+            padding: 10px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            background: rgba(255, 255, 255, 0.2);
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        html[data-theme='dark'] .ai-result-item {
+            background: rgba(0, 0, 0, 0.2);
+        }
+
+        .ai-result-item:hover {
+            background: rgba(108, 99, 255, 0.1);
+        }
+
+        .ai-result-title {
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 5px;
+        }
+
+        .ai-result-artist {
+            font-size: 12px;
+            color: var(--text-secondary);
         }
 
         /* === RESPONSIVE STYLES === */
@@ -1063,6 +1376,10 @@
             .lyrics-line.active {
                 font-size: 18px;
             }
+
+            .theme-toggle {
+                top: 70px;
+            }
         }
 
         /* === ANIMATIONS === */
@@ -1133,6 +1450,18 @@
             filter: blur(40px);
         }
 
+        html[data-theme='dark'] .decoration-1 {
+            background: radial-gradient(circle, rgba(108, 99, 255, 0.3) 0%, rgba(108, 99, 255, 0) 70%);
+        }
+
+        html[data-theme='dark'] .decoration-2 {
+            background: radial-gradient(circle, rgba(255, 101, 132, 0.3) 0%, rgba(255, 101, 132, 0) 70%);
+        }
+
+        html[data-theme='dark'] .decoration-3 {
+            background: radial-gradient(circle, rgba(0, 184, 148, 0.2) 0%, rgba(0, 184, 148, 0) 70%);
+        }
+
         .music-note {
             position: absolute;
             font-size: 24px;
@@ -1159,6 +1488,10 @@
             border-radius: 4px;
         }
 
+        html[data-theme='dark'] ::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.05);
+        }
+
         ::-webkit-scrollbar-thumb {
             background: var(--primary);
             border-radius: 4px;
@@ -1168,15 +1501,23 @@
             background: var(--primary-dark);
         }
     </style>
-<script src="https://sites.super.myninja.ai/_assets/ninja-daytona-script.js"></script>
 </head>
 <body>
     <div class="app-container">
+        <!-- Theme Toggle -->
+        <div class="theme-toggle" id="themeToggle">
+            <div class="theme-toggle-track">
+                <div class="theme-toggle-thumb">
+                    <i class="fas fa-sun"></i>
+                </div>
+            </div>
+        </div>
+
         <!-- Sidebar -->
         <div class="sidebar">
             <div class="logo-container">
                 <a href="#" class="logo">
-                    <span class="logo-icon">🎵</span>
+                    <span class="logo-icon">\ud83c\udfb5</span>
                     <span class="logo-text">LyricSync</span>
                 </a>
                 <div class="toggle-btn">
@@ -1216,7 +1557,7 @@
                 </li>
             </ul>
             <div class="sidebar-footer">
-                <p>© 2025 RenzMc. All rights reserved.</p>
+                <p>\u00a9 2025 RenzMc. All rights reserved.</p>
                 <div class="social-links">
                     <a href="https://github.com/RenzMc" class="social-link" target="_blank">
                         <i class="fab fa-github"></i>
@@ -1344,6 +1685,20 @@
                         </div>
                     </div>
                 </div>
+                
+                <div class="settings-panel">
+                    <div class="settings-title">
+                        <i class="fas fa-palette"></i> Appearance
+                    </div>
+                    
+                    <div class="settings-group">
+                        <div class="settings-label">Theme</div>
+                        <div class="animation-options">
+                            <div class="animation-option active" data-theme="light">Light</div>
+                            <div class="animation-option" data-theme="dark">Dark</div>
+                        </div>
+                    </div>
+                </div>
             </div>
 
             <!-- Lyrics Section -->
@@ -1351,6 +1706,9 @@
                 <div class="lyrics-header">
                     <h2 class="lyrics-title">Your Lyrics</h2>
                     <div class="lyrics-actions">
+                        <button class="btn btn-sm" id="editBtn">
+                            <i class="fas fa-edit"></i> Edit
+                        </button>
                         <button class="btn btn-sm" id="copyBtn">
                             <i class="fas fa-copy"></i> Copy
                         </button>
@@ -1411,6 +1769,44 @@
         </div>
     </div>
 
+    <!-- Edit Lyrics Modal -->
+    <div class="modal" id="editModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Edit Lyrics</h3>
+                <button class="modal-close" id="closeModal">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <textarea class="lyrics-editor" id="lyricsEditor"></textarea>
+                
+                <div class="ai-search">
+                    <div class="ai-search-title">
+                        <i class="fas fa-robot"></i> AI Lyrics Search
+                    </div>
+                    <div class="ai-search-form">
+                        <input type="text" class="ai-search-input" id="aiSearchInput" placeholder="Search for song by title or artist...">
+                        <button class="btn btn-sm" id="aiSearchBtn">
+                            <i class="fas fa-search"></i> Search
+                        </button>
+                    </div>
+                    <div class="ai-search-results" id="aiSearchResults">
+                        <!-- AI search results will be added dynamically -->
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-sm" id="cancelEditBtn">
+                    <i class="fas fa-times"></i> Cancel
+                </button>
+                <button class="btn btn-sm" id="saveEditBtn">
+                    <i class="fas fa-save"></i> Save Changes
+                </button>
+            </div>
+        </div>
+    </div>
+
     <!-- Font Awesome -->
     <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
 
@@ -1450,12 +1846,29 @@
             const settingsBtn = document.getElementById('settingsBtn');
             const newConversionBtn = document.getElementById('newConversionBtn');
             const animationOptions = document.querySelectorAll('.animation-option');
+            const themeToggle = document.getElementById('themeToggle');
+            const editBtn = document.getElementById('editBtn');
+            const editModal = document.getElementById('editModal');
+            const closeModal = document.getElementById('closeModal');
+            const lyricsEditor = document.getElementById('lyricsEditor');
+            const cancelEditBtn = document.getElementById('cancelEditBtn');
+            const saveEditBtn = document.getElementById('saveEditBtn');
+            const aiSearchInput = document.getElementById('aiSearchInput');
+            const aiSearchBtn = document.getElementById('aiSearchBtn');
+            const aiSearchResults = document.getElementById('aiSearchResults');
 
             // Settings
             let currentAnimationStyle = 'style-spotify';
             let currentHighlightColor = 'primary';
             let currentFontSize = 'medium';
             let currentPlaybackSpeed = 1;
+            let currentTheme = localStorage.getItem('theme') || 'light';
+
+            // Apply saved theme
+            document.documentElement.setAttribute('data-theme', currentTheme);
+            document.querySelectorAll('[data-theme]').forEach(option => {
+                option.classList.toggle('active', option.dataset.theme === currentTheme);
+            });
 
             // Audio Context
             let audioContext;
@@ -1469,6 +1882,18 @@
             let currentLyricIndex = 0;
             let animationFrame;
             let karaokeInterval;
+
+            // Theme Toggle
+            themeToggle.addEventListener('click', function() {
+                const newTheme = document.documentElement.getAttribute('data-theme') === 'light' ? 'dark' : 'light';
+                document.documentElement.setAttribute('data-theme', newTheme);
+                localStorage.setItem('theme', newTheme);
+                
+                // Update theme options in settings
+                document.querySelectorAll('[data-theme]').forEach(option => {
+                    option.classList.toggle('active', option.dataset.theme === newTheme);
+                });
+            });
 
             // 3D Parallax Effect
             document.addEventListener('mousemove', function(e) {
@@ -1537,6 +1962,316 @@
                 document.querySelector('[data-section="settings"]').classList.add('active');
             });
 
+            // Edit button
+            editBtn.addEventListener('click', function() {
+                // Populate editor with current lyrics
+                lyricsEditor.value = lyricsText.textContent;
+                
+                // Show modal
+                editModal.classList.add('show');
+            });
+
+            // Close modal
+            closeModal.addEventListener('click', function() {
+                editModal.classList.remove('show');
+            });
+
+            // Cancel edit
+            cancelEditBtn.addEventListener('click', function() {
+                editModal.classList.remove('show');
+            });
+
+            // Save edit
+            saveEditBtn.addEventListener('click', function() {
+                // Update lyrics text
+                lyricsText.textContent = lyricsEditor.value;
+                
+                // Parse lyrics into lines
+                const lines = lyricsEditor.value.split('\
+').filter(line => line.trim() !== '');
+                
+                // Update lyrics array
+                lyrics = [];
+                const duration = audioBuffer ? audioBuffer.duration : 180; // Default to 3 minutes if no audio
+                const timePerLine = duration / lines.length;
+                
+                lines.forEach((line, index) => {
+                    const startTime = index * timePerLine;
+                    const endTime = (index + 1) * timePerLine;
+                    
+                    lyrics.push({
+                        startTime: startTime,
+                        endTime: endTime,
+                        text: line
+                    });
+                });
+                
+                // Update lyrics display
+                updateLyricsDisplay();
+                
+                // Hide modal
+                editModal.classList.remove('show');
+            });
+
+            // AI Search
+            aiSearchBtn.addEventListener('click', function() {
+                const query = aiSearchInput.value.trim();
+                if (!query) return;
+                
+                // Show loading state
+                this.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Searching...';
+                this.disabled = true;
+                
+                // Simulate API call to search for lyrics
+                setTimeout(() => {
+                    // Reset button
+                    this.innerHTML = '<i class="fas fa-search"></i> Search';
+                    this.disabled = false;
+                    
+                    // Show results
+                    aiSearchResults.classList.add('show');
+                    
+                    // Generate mock results based on query
+                    const results = generateMockResults(query);
+                    
+                    // Display results
+                    aiSearchResults.innerHTML = '';
+                    results.forEach(result => {
+                        const resultItem = document.createElement('div');
+                        resultItem.classList.add('ai-result-item');
+                        resultItem.innerHTML = `
+                            <div class="ai-result-title">${result.title}</div>
+                            <div class="ai-result-artist">${result.artist}</div>
+                        `;
+                        
+                        // Add click event to use this result
+                        resultItem.addEventListener('click', function() {
+                            // Set lyrics in editor
+                            lyricsEditor.value = result.lyrics;
+                            
+                            // Hide results
+                            aiSearchResults.classList.remove('show');
+                            
+                            // Clear search input
+                            aiSearchInput.value = '';
+                        });
+                        
+                        aiSearchResults.appendChild(resultItem);
+                    });
+                }, 1500);
+            });
+
+            // Generate mock search results
+            function generateMockResults(query) {
+                const songDatabase = [
+                    {
+                        title: "Walking on Sunshine",
+                        artist: "Katrina and The Waves",
+                        lyrics: "I'm walking on sunshine, woah\
+I'm walking on sunshine, woah\
+I'm walking on sunshine, woah\
+And don't it feel good\
+\
+Hey, alright now\
+And don't it feel good\
+Hey, yeah\
+\
+I used to think maybe you loved me, now baby I'm sure\
+And I just can't wait till the day when you knock on my door\
+Now every time I go for the mailbox, gotta hold myself down\
+'Cause I just can't wait till you write me you're coming around\
+\
+I'm walking on sunshine, woah\
+I'm walking on sunshine, woah\
+I'm walking on sunshine, woah\
+And don't it feel good\
+\
+Hey, alright now\
+And don't it feel good\
+Hey, yeah\
+\
+I used to think maybe you loved me, now I know that it's true\
+And I don't want to spend my whole life just a-waiting for you\
+Now I don't want you back for the weekend, not back for a day\
+I said, baby, I just want you back, and I want you to stay\
+\
+I'm walking on sunshine, woah\
+I'm walking on sunshine, woah\
+I'm walking on sunshine, woah\
+And don't it feel good\
+\
+Hey, alright now\
+And don't it feel good\
+Hey, yeah\
+\
+Walking on sunshine\
+Walking on sunshine\
+\
+I feel alive, I feel the love, I feel the love that's really real\
+I feel alive, I feel the love, I feel the love that's really real\
+\
+I'm on sunshine, baby, oh\
+Oh, yeah, I'm on sunshine, baby\
+\
+I'm walking on sunshine, woah\
+I'm walking on sunshine, woah\
+I'm walking on sunshine, woah\
+And don't it feel good\
+\
+Hey, alright now\
+And don't it feel good\
+Hey, yeah\
+\
+I'll say it again now\
+And don't it feel good"
+                    },
+                    {
+                        title: "Bohemian Rhapsody",
+                        artist: "Queen",
+                        lyrics: "Is this the real life? Is this just fantasy?\
+Caught in a landslide, no escape from reality\
+Open your eyes, look up to the skies and see\
+I'm just a poor boy, I need no sympathy\
+Because I'm easy come, easy go, little high, little low\
+Any way the wind blows doesn't really matter to me, to me\
+\
+Mama, just killed a man\
+Put a gun against his head, pulled my trigger, now he's dead\
+Mama, life had just begun\
+But now I've gone and thrown it all away\
+Mama, ooh, didn't mean to make you cry\
+If I'm not back again this time tomorrow\
+Carry on, carry on as if nothing really matters\
+\
+Too late, my time has come\
+Sends shivers down my spine, body's aching all the time\
+Goodbye, everybody, I've got to go\
+Gotta leave you all behind and face the truth\
+Mama, ooh, I don't want to die\
+I sometimes wish I'd never been born at all\
+\
+I see a little silhouetto of a man\
+Scaramouche, Scaramouche, will you do the Fandango?\
+Thunderbolts and lightning, very, very frightening me\
+Galileo, Galileo, Galileo, Galileo, Galileo Figaro\
+Magnificooooo\
+\
+I'm just a poor boy, nobody loves me\
+He's just a poor boy from a poor family\
+Spare him his life from this monstrosity\
+Easy come, easy go, will you let me go?\
+Bismillah! No, we will not let you go\
+Let him go!\
+Bismillah! We will not let you go\
+Let him go!\
+Bismillah! We will not let you go\
+Let me go!\
+Will not let you go\
+Let me go!\
+Will not let you go\
+Let me go!\
+No, no, no, no, no, no, no\
+Oh, mama mia, mama mia\
+Mama mia, let me go\
+Beelzebub has a devil put aside for me, for me, for me\
+\
+So you think you can stone me and spit in my eye?\
+So you think you can love me and leave me to die?\
+Oh, baby, can't do this to me, baby\
+Just gotta get out, just gotta get right outta here\
+\
+Ooh, ooh yeah, ooh yeah\
+Nothing really matters, anyone can see\
+Nothing really matters\
+Nothing really matters to me\
+\
+Any way the wind blows"
+                    },
+                    {
+                        title: "Imagine",
+                        artist: "John Lennon",
+                        lyrics: "Imagine there's no heaven\
+It's easy if you try\
+No hell below us\
+Above us, only sky\
+\
+Imagine all the people\
+Living for today\
+\
+Imagine there's no countries\
+It isn't hard to do\
+Nothing to kill or die for\
+And no religion, too\
+\
+Imagine all the people\
+Living life in peace\
+\
+You may say I'm a dreamer\
+But I'm not the only one\
+I hope someday you'll join us\
+And the world will be as one\
+\
+Imagine no possessions\
+I wonder if you can\
+No need for greed or hunger\
+A brotherhood of man\
+\
+Imagine all the people\
+Sharing all the world\
+\
+You may say I'm a dreamer\
+But I'm not the only one\
+I hope someday you'll join us\
+And the world will live as one"
+                    },
+                    {
+                        title: "Shape of You",
+                        artist: "Ed Sheeran",
+                        lyrics: "The club isn't the best place to find a lover\
+So the bar is where I go\
+Me and my friends at the table doing shots\
+Drinking fast and then we talk slow\
+Come over and start up a conversation with just me\
+And trust me I'll give it a chance now\
+Take my hand, stop, put Van the Man on the jukebox\
+And then we start to dance, and now I'm singing like\
+\
+Girl, you know I want your love\
+Your love was handmade for somebody like me\
+Come on now, follow my lead\
+I may be crazy, don't mind me\
+Say, boy, let's not talk too much\
+Grab on my waist and put that body on me\
+Come on now, follow my lead\
+Come, come on now, follow my lead\
+\
+I'm in love with the shape of you\
+We push and pull like a magnet do\
+Although my heart is falling too\
+I'm in love with your body\
+And last night you were in my room\
+And now my bedsheets smell like you\
+Every day discovering something brand new\
+I'm in love with your body\
+\
+Oh\u2014I\u2014oh\u2014I\u2014oh\u2014I\u2014oh\u2014I\
+I'm in love with your body\
+Oh\u2014I\u2014oh\u2014I\u2014oh\u2014I\u2014oh\u2014I\
+I'm in love with your body\
+Oh\u2014I\u2014oh\u2014I\u2014oh\u2014I\u2014oh\u2014I\
+I'm in love with your body\
+Every day discovering something brand new\
+I'm in love with the shape of you"
+                    }
+                ];
+                
+                // Filter songs based on query
+                return songDatabase.filter(song => {
+                    const searchString = `${song.title} ${song.artist}`.toLowerCase();
+                    return searchString.includes(query.toLowerCase());
+                });
+            }
+
             // Animation style options
             animationOptions.forEach(option => {
                 option.addEventListener('click', function() {
@@ -1562,6 +2297,10 @@
                     } else if (this.dataset.speed) {
                         currentPlaybackSpeed = parseFloat(this.dataset.speed);
                         updatePlaybackSpeed();
+                    } else if (this.dataset.theme) {
+                        const newTheme = this.dataset.theme;
+                        document.documentElement.setAttribute('data-theme', newTheme);
+                        localStorage.setItem('theme', newTheme);
                     }
                 });
             });
@@ -1633,24 +2372,24 @@
             // Get color value
             function getColorValue(color) {
                 switch (color) {
-                    case 'primary': return '#6c63ff';
-                    case 'secondary': return '#ff6584';
-                    case 'success': return '#00b894';
-                    case 'warning': return '#fdcb6e';
-                    case 'danger': return '#d63031';
-                    default: return '#6c63ff';
+                    case 'primary': return document.documentElement.getAttribute('data-theme') === 'dark' ? '#8983ff' : '#6c63ff';
+                    case 'secondary': return document.documentElement.getAttribute('data-theme') === 'dark' ? '#ff7a97' : '#ff6584';
+                    case 'success': return document.documentElement.getAttribute('data-theme') === 'dark' ? '#00d1ab' : '#00b894';
+                    case 'warning': return document.documentElement.getAttribute('data-theme') === 'dark' ? '#ffeaa7' : '#fdcb6e';
+                    case 'danger': return document.documentElement.getAttribute('data-theme') === 'dark' ? '#ff6b6b' : '#d63031';
+                    default: return document.documentElement.getAttribute('data-theme') === 'dark' ? '#8983ff' : '#6c63ff';
                 }
             }
 
             // Get darker color value
             function getDarkerColorValue(color) {
                 switch (color) {
-                    case 'primary': return '#5a52d5';
-                    case 'secondary': return '#e05470';
-                    case 'success': return '#00a382';
-                    case 'warning': return '#e0b561';
-                    case 'danger': return '#c42e2e';
-                    default: return '#5a52d5';
+                    case 'primary': return document.documentElement.getAttribute('data-theme') === 'dark' ? '#6c63ff' : '#5a52d5';
+                    case 'secondary': return document.documentElement.getAttribute('data-theme') === 'dark' ? '#ff6584' : '#e05470';
+                    case 'success': return document.documentElement.getAttribute('data-theme') === 'dark' ? '#00b894' : '#00a382';
+                    case 'warning': return document.documentElement.getAttribute('data-theme') === 'dark' ? '#fdcb6e' : '#e0b561';
+                    case 'danger': return document.documentElement.getAttribute('data-theme') === 'dark' ? '#d63031' : '#c42e2e';
+                    default: return document.documentElement.getAttribute('data-theme') === 'dark' ? '#6c63ff' : '#5a52d5';
                 }
             }
 
@@ -1929,13 +2668,19 @@
                         text: text
                     });
                     
-                    fullText += text + '\n';
+                    fullText += text + '\
+';
                 }
                 
                 // Display full lyrics text
                 lyricsText.textContent = fullText;
                 
                 // Create lyrics elements
+                updateLyricsDisplay();
+            }
+
+            // Update lyrics display
+            function updateLyricsDisplay() {
                 lyricsContainer.innerHTML = '';
                 lyrics.forEach((line, index) => {
                     const lyricElement = document.createElement('div');
@@ -1944,6 +2689,9 @@
                     lyricElement.dataset.index = index;
                     lyricsContainer.appendChild(lyricElement);
                 });
+                
+                // Apply current style
+                updateLyricsStyle();
             }
 
             // Play/Pause button
@@ -2318,7 +3066,7 @@
             // Create floating music notes animation
             function createMusicNotes() {
                 const container = document.querySelector('.app-container');
-                const notes = ['♪', '♫', '♬', '♩', '♭', '♮'];
+                const notes = ['\u266a', '\u266b', '\u266c', '\u2669', '\u266d', '\u266e'];
                 
                 setInterval(() => {
                     if (Math.random() > 0.7 && isPlaying) {
