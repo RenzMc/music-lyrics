@@ -1,0 +1,2371 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LyricSync - Music to Lyrics Converter | RenzMc</title>
+    <style>
+        /* === RESET & BASE STYLES === */
+        *, *::before, *::after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        :root {
+            --primary: #6c63ff;
+            --primary-dark: #5a52d5;
+            --secondary: #ff6584;
+            --dark: #2d3436;
+            --light: #f5f6fa;
+            --success: #00b894;
+            --warning: #fdcb6e;
+            --danger: #d63031;
+            --gray: #636e72;
+            --sidebar-width: 280px;
+            --sidebar-collapsed: 80px;
+        }
+
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+
+        html, body {
+            height: 100%;
+            width: 100%;
+            overflow-x: hidden;
+            background-color: var(--light);
+            color: var(--dark);
+            scroll-behavior: smooth;
+        }
+
+        body {
+            perspective: 1000px;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+        }
+
+        /* === 3D PARALLAX EFFECTS === */
+        .parallax-container {
+            position: relative;
+            width: 100%;
+            height: 100vh;
+            overflow: hidden;
+            transform-style: preserve-3d;
+        }
+
+        .parallax-layer {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            transform-style: preserve-3d;
+            transition: transform 0.5s ease-out;
+        }
+
+        .layer-1 {
+            transform: translateZ(-10px) scale(2);
+        }
+
+        .layer-2 {
+            transform: translateZ(-5px) scale(1.5);
+        }
+
+        .layer-3 {
+            transform: translateZ(0) scale(1);
+        }
+
+        .layer-4 {
+            transform: translateZ(5px) scale(0.8);
+        }
+
+        .layer-5 {
+            transform: translateZ(10px) scale(0.6);
+        }
+
+        /* === LAYOUT === */
+        .app-container {
+            display: flex;
+            width: 100%;
+            height: 100vh;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* === SIDEBAR === */
+        .sidebar {
+            width: var(--sidebar-width);
+            height: 100%;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-right: 1px solid rgba(255, 255, 255, 0.2);
+            position: fixed;
+            left: 0;
+            top: 0;
+            z-index: 100;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 5px 0 15px rgba(0, 0, 0, 0.05);
+            padding: 20px 0;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .sidebar.collapsed {
+            width: var(--sidebar-collapsed);
+        }
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+            padding: 0 20px;
+            margin-bottom: 40px;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--primary);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logo-icon {
+            font-size: 28px;
+        }
+
+        .logo-text {
+            transition: opacity 0.3s ease;
+        }
+
+        .sidebar.collapsed .logo-text {
+            opacity: 0;
+            width: 0;
+            overflow: hidden;
+        }
+
+        .toggle-btn {
+            position: absolute;
+            top: 20px;
+            right: -12px;
+            width: 24px;
+            height: 24px;
+            background: var(--primary);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            cursor: pointer;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+            z-index: 101;
+            transition: transform 0.3s ease;
+        }
+
+        .sidebar.collapsed .toggle-btn {
+            transform: rotate(180deg);
+        }
+
+        .menu {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .menu-item {
+            margin-bottom: 5px;
+        }
+
+        .menu-link {
+            display: flex;
+            align-items: center;
+            padding: 12px 20px;
+            color: var(--dark);
+            text-decoration: none;
+            transition: all 0.3s ease;
+            border-left: 3px solid transparent;
+        }
+
+        .menu-link:hover, .menu-link.active {
+            background: rgba(108, 99, 255, 0.1);
+            border-left: 3px solid var(--primary);
+            color: var(--primary);
+        }
+
+        .menu-icon {
+            font-size: 20px;
+            margin-right: 15px;
+            transition: margin 0.3s ease;
+        }
+
+        .sidebar.collapsed .menu-icon {
+            margin-right: 0;
+        }
+
+        .menu-text {
+            transition: opacity 0.3s ease;
+        }
+
+        .sidebar.collapsed .menu-text {
+            opacity: 0;
+            width: 0;
+            overflow: hidden;
+        }
+
+        .sidebar-footer {
+            margin-top: auto;
+            padding: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            font-size: 12px;
+            text-align: center;
+            color: var(--gray);
+        }
+
+        .sidebar.collapsed .sidebar-footer {
+            display: none;
+        }
+
+        .social-links {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .social-link {
+            color: var(--gray);
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        .social-link:hover {
+            color: var(--primary);
+        }
+
+        /* === MAIN CONTENT === */
+        .main-content {
+            flex: 1;
+            margin-left: var(--sidebar-width);
+            padding: 20px;
+            transition: margin 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            height: 100vh;
+            overflow-y: auto;
+            position: relative;
+        }
+
+        .sidebar.collapsed ~ .main-content {
+            margin-left: var(--sidebar-collapsed);
+        }
+
+        /* === UPLOAD SECTION === */
+        .upload-section {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: calc(100vh - 40px);
+            text-align: center;
+            padding: 20px;
+            transition: all 0.5s ease;
+        }
+
+        .upload-container {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 40px;
+            width: 100%;
+            max-width: 600px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            transform: translateZ(20px);
+            transition: all 0.3s ease;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .upload-container:hover {
+            transform: translateZ(30px) scale(1.02);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
+        }
+
+        .upload-title {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 20px;
+            color: var(--primary);
+        }
+
+        .upload-description {
+            color: var(--gray);
+            margin-bottom: 30px;
+            font-size: 16px;
+            line-height: 1.6;
+        }
+
+        .file-drop-area {
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            height: 200px;
+            border: 2px dashed var(--primary);
+            border-radius: 10px;
+            transition: all 0.3s ease;
+            background: rgba(108, 99, 255, 0.05);
+            margin-bottom: 20px;
+            overflow: hidden;
+        }
+
+        .file-drop-area.highlight {
+            border-color: var(--success);
+            background: rgba(0, 184, 148, 0.1);
+        }
+
+        .file-msg {
+            font-size: 18px;
+            color: var(--gray);
+            transition: all 0.3s ease;
+        }
+
+        .file-input {
+            position: absolute;
+            left: 0;
+            top: 0;
+            height: 100%;
+            width: 100%;
+            opacity: 0;
+            cursor: pointer;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 12px 24px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 50px;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 10px rgba(108, 99, 255, 0.3);
+            text-decoration: none;
+            gap: 8px;
+        }
+
+        .btn:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(108, 99, 255, 0.4);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+            box-shadow: 0 2px 5px rgba(108, 99, 255, 0.3);
+        }
+
+        .btn-icon {
+            font-size: 18px;
+        }
+
+        .btn-convert {
+            margin-top: 20px;
+            min-width: 180px;
+            opacity: 0.7;
+            pointer-events: none;
+        }
+
+        .btn-convert.active {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        .file-info {
+            display: flex;
+            align-items: center;
+            margin-top: 15px;
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.5);
+            border-radius: 8px;
+            display: none;
+        }
+
+        .file-info.show {
+            display: flex;
+        }
+
+        .file-icon {
+            font-size: 24px;
+            color: var(--primary);
+            margin-right: 10px;
+        }
+
+        .file-details {
+            flex: 1;
+            text-align: left;
+        }
+
+        .file-name {
+            font-weight: 500;
+            color: var(--dark);
+            margin-bottom: 2px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 250px;
+        }
+
+        .file-size {
+            font-size: 12px;
+            color: var(--gray);
+        }
+
+        .file-remove {
+            color: var(--danger);
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 18px;
+            transition: all 0.2s ease;
+        }
+
+        .file-remove:hover {
+            transform: scale(1.1);
+        }
+
+        /* === LOADING ANIMATION === */
+        .loading-section {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(10px);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.5s ease;
+        }
+
+        .loading-section.show {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .loading-container {
+            text-align: center;
+        }
+
+        .loading-title {
+            font-size: 24px;
+            font-weight: 600;
+            color: var(--primary);
+            margin-bottom: 20px;
+        }
+
+        .loading-animation {
+            position: relative;
+            width: 200px;
+            height: 200px;
+            margin: 0 auto 30px;
+        }
+
+        .loading-circle {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            border: 4px solid transparent;
+            border-top-color: var(--primary);
+            animation: spin 1.5s linear infinite;
+        }
+
+        .loading-circle:nth-child(2) {
+            border-top-color: transparent;
+            border-right-color: var(--secondary);
+            animation-duration: 2s;
+        }
+
+        .loading-circle:nth-child(3) {
+            width: 70%;
+            height: 70%;
+            top: 15%;
+            left: 15%;
+            border-top-color: transparent;
+            border-left-color: var(--success);
+            animation-duration: 1s;
+            animation-direction: reverse;
+        }
+
+        .loading-text {
+            color: var(--gray);
+            font-size: 16px;
+            margin-top: 20px;
+        }
+
+        .loading-progress {
+            width: 300px;
+            height: 6px;
+            background: rgba(0, 0, 0, 0.1);
+            border-radius: 3px;
+            margin-top: 20px;
+            overflow: hidden;
+        }
+
+        .loading-bar {
+            height: 100%;
+            width: 0;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            border-radius: 3px;
+            transition: width 0.3s ease;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* === LYRICS SECTION === */
+        .lyrics-section {
+            display: none;
+            padding: 40px 20px;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .lyrics-section.show {
+            display: block;
+        }
+
+        .lyrics-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 30px;
+        }
+
+        .lyrics-title {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .lyrics-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn-sm {
+            padding: 8px 16px;
+            font-size: 14px;
+        }
+
+        .lyrics-player {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .audio-controls {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+
+        .audio-info {
+            display: flex;
+            align-items: center;
+        }
+
+        .audio-thumbnail {
+            width: 60px;
+            height: 60px;
+            border-radius: 10px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+            color: white;
+            font-size: 24px;
+        }
+
+        .audio-details {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .audio-name {
+            font-weight: 600;
+            color: var(--dark);
+            margin-bottom: 5px;
+        }
+
+        .audio-duration {
+            font-size: 12px;
+            color: var(--gray);
+        }
+
+        .player-controls {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .player-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 18px;
+            color: var(--dark);
+            transition: all 0.2s ease;
+        }
+
+        .player-btn:hover {
+            color: var(--primary);
+        }
+
+        .player-btn.play-pause {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--primary);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 10px rgba(108, 99, 255, 0.3);
+        }
+
+        .player-btn.play-pause:hover {
+            background: var(--primary-dark);
+            transform: scale(1.05);
+        }
+
+        .progress-container {
+            width: 100%;
+            height: 6px;
+            background: rgba(0, 0, 0, 0.1);
+            border-radius: 3px;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .progress-bar {
+            height: 100%;
+            width: 0;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            border-radius: 3px;
+            transition: width 0.1s linear;
+        }
+
+        .progress-handle {
+            width: 14px;
+            height: 14px;
+            background: white;
+            border: 3px solid var(--primary);
+            border-radius: 50%;
+            position: absolute;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            left: 0;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+            transition: left 0.1s linear;
+        }
+
+        .time-display {
+            display: flex;
+            justify-content: space-between;
+            font-size: 12px;
+            color: var(--gray);
+            margin-top: 5px;
+        }
+
+        .lyrics-container {
+            height: 300px;
+            overflow-y: auto;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.5);
+            border-radius: 10px;
+            margin-top: 20px;
+            position: relative;
+        }
+
+        /* === LYRICS ANIMATION STYLES === */
+        /* Default style */
+        .lyrics-line {
+            padding: 10px 0;
+            font-size: 18px;
+            color: var(--gray);
+            transition: all 0.3s ease;
+            opacity: 0.6;
+        }
+
+        .lyrics-line.active {
+            color: var(--primary);
+            font-weight: 600;
+            font-size: 22px;
+            opacity: 1;
+        }
+
+        /* Spotify style */
+        .lyrics-container.style-spotify .lyrics-line {
+            padding: 12px 0;
+            font-size: 20px;
+            color: rgba(45, 52, 54, 0.6);
+            transition: all 0.3s ease;
+            opacity: 0.6;
+            text-align: center;
+        }
+
+        .lyrics-container.style-spotify .lyrics-line.active {
+            color: var(--dark);
+            font-weight: 700;
+            font-size: 24px;
+            opacity: 1;
+        }
+
+        /* Karaoke style */
+        .lyrics-container.style-karaoke .lyrics-line {
+            padding: 10px 0;
+            font-size: 20px;
+            color: var(--gray);
+            transition: all 0.3s ease;
+            opacity: 0.7;
+            position: relative;
+        }
+
+        .lyrics-container.style-karaoke .lyrics-line.active {
+            color: var(--dark);
+            font-weight: 600;
+            font-size: 22px;
+            opacity: 1;
+        }
+
+        .lyrics-container.style-karaoke .lyrics-line.active .highlight {
+            position: relative;
+            color: var(--primary);
+            font-weight: 700;
+        }
+
+        /* Typing style */
+        .lyrics-container.style-typing .lyrics-line {
+            padding: 10px 0;
+            font-size: 20px;
+            color: var(--gray);
+            transition: all 0.3s ease;
+            opacity: 0.7;
+            border-right: 0px solid transparent;
+        }
+
+        .lyrics-container.style-typing .lyrics-line.active {
+            color: var(--dark);
+            font-weight: 600;
+            font-size: 22px;
+            opacity: 1;
+            border-right: 2px solid var(--primary);
+            white-space: nowrap;
+            overflow: hidden;
+            animation: typing 3.5s steps(40, end);
+        }
+
+        @keyframes typing {
+            from { width: 0 }
+            to { width: 100% }
+        }
+
+        /* Wave style */
+        .lyrics-container.style-wave .lyrics-line {
+            padding: 10px 0;
+            font-size: 20px;
+            color: var(--gray);
+            transition: all 0.3s ease;
+            opacity: 0.7;
+        }
+
+        .lyrics-container.style-wave .lyrics-line.active {
+            color: var(--primary);
+            font-weight: 600;
+            font-size: 22px;
+            opacity: 1;
+        }
+
+        .lyrics-container.style-wave .lyrics-line.active span {
+            display: inline-block;
+            animation: wave 0.3s ease infinite;
+            animation-delay: calc(0.05s * var(--i));
+        }
+
+        @keyframes wave {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-5px); }
+        }
+
+        /* 3D style */
+        .lyrics-container.style-3d .lyrics-line {
+            padding: 10px 0;
+            font-size: 20px;
+            color: var(--gray);
+            transition: all 0.3s ease;
+            opacity: 0.7;
+            transform: perspective(500px) rotateX(0);
+        }
+
+        .lyrics-container.style-3d .lyrics-line.active {
+            color: var(--primary);
+            font-weight: 600;
+            font-size: 22px;
+            opacity: 1;
+            text-shadow: 0 1px 0 #ccc, 
+                        0 2px 0 #c9c9c9,
+                        0 3px 0 #bbb,
+                        0 4px 0 #b9b9b9,
+                        0 5px 0 #aaa,
+                        0 6px 1px rgba(0,0,0,.1),
+                        0 0 5px rgba(0,0,0,.1),
+                        0 1px 3px rgba(0,0,0,.3),
+                        0 3px 5px rgba(0,0,0,.2),
+                        0 5px 10px rgba(0,0,0,.25);
+            transform: perspective(500px) rotateX(10deg);
+            transform-origin: center top;
+        }
+
+        .lyrics-text {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 30px;
+            min-height: 200px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        }
+
+        .lyrics-text-content {
+            white-space: pre-wrap;
+            line-height: 1.6;
+            color: var(--dark);
+        }
+
+        /* === SETTINGS PANEL === */
+        .settings-panel {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .settings-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--primary);
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .settings-group {
+            margin-bottom: 15px;
+        }
+
+        .settings-label {
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--dark);
+            margin-bottom: 8px;
+        }
+
+        .animation-options {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .animation-option {
+            padding: 8px 16px;
+            background: rgba(255, 255, 255, 0.5);
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            border-radius: 20px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .animation-option:hover {
+            background: rgba(108, 99, 255, 0.1);
+        }
+
+        .animation-option.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        .settings-section {
+            display: none;
+            margin-top: 20px;
+        }
+
+        .settings-section.show {
+            display: block;
+        }
+
+        /* === RESPONSIVE STYLES === */
+        @media (max-width: 992px) {
+            .sidebar {
+                width: var(--sidebar-collapsed);
+                transform: translateX(0);
+            }
+
+            .sidebar.expanded {
+                width: var(--sidebar-width);
+                transform: translateX(0);
+            }
+
+            .sidebar .logo-text,
+            .sidebar .menu-text,
+            .sidebar .sidebar-footer {
+                opacity: 0;
+                width: 0;
+                overflow: hidden;
+            }
+
+            .sidebar.expanded .logo-text,
+            .sidebar.expanded .menu-text,
+            .sidebar.expanded .sidebar-footer {
+                opacity: 1;
+                width: auto;
+                overflow: visible;
+            }
+
+            .sidebar .menu-icon {
+                margin-right: 0;
+            }
+
+            .sidebar.expanded .menu-icon {
+                margin-right: 15px;
+            }
+
+            .main-content {
+                margin-left: var(--sidebar-collapsed);
+            }
+
+            .sidebar.expanded ~ .main-content {
+                margin-left: var(--sidebar-width);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+                z-index: 1000;
+            }
+
+            .sidebar.expanded {
+                transform: translateX(0);
+                width: var(--sidebar-width);
+            }
+
+            .main-content {
+                margin-left: 0;
+            }
+
+            .sidebar.expanded ~ .main-content {
+                margin-left: 0;
+            }
+
+            .toggle-btn {
+                right: -40px;
+                background: var(--primary);
+            }
+
+            .upload-container {
+                padding: 20px;
+            }
+
+            .upload-title {
+                font-size: 24px;
+            }
+
+            .file-drop-area {
+                height: 150px;
+            }
+
+            .lyrics-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 15px;
+            }
+
+            .lyrics-actions {
+                width: 100%;
+                justify-content: space-between;
+            }
+
+            .audio-controls {
+                flex-direction: column;
+                gap: 15px;
+            }
+
+            .audio-info {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .player-controls {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .animation-options {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .upload-container {
+                padding: 15px;
+            }
+
+            .btn {
+                padding: 10px 20px;
+                font-size: 14px;
+            }
+
+            .file-msg {
+                font-size: 16px;
+            }
+
+            .lyrics-container {
+                height: 250px;
+            }
+
+            .lyrics-line {
+                font-size: 16px;
+            }
+
+            .lyrics-line.active {
+                font-size: 18px;
+            }
+        }
+
+        /* === ANIMATIONS === */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+            100% { transform: translateY(0px); }
+        }
+
+        .fade-in {
+            animation: fadeIn 0.5s ease forwards;
+        }
+
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+
+        .float {
+            animation: float 3s ease-in-out infinite;
+        }
+
+        /* === DECORATIVE ELEMENTS === */
+        .decoration {
+            position: absolute;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .decoration-1 {
+            top: 10%;
+            left: 5%;
+            width: 300px;
+            height: 300px;
+            background: radial-gradient(circle, rgba(108, 99, 255, 0.2) 0%, rgba(108, 99, 255, 0) 70%);
+            border-radius: 50%;
+            filter: blur(30px);
+        }
+
+        .decoration-2 {
+            bottom: 10%;
+            right: 5%;
+            width: 250px;
+            height: 250px;
+            background: radial-gradient(circle, rgba(255, 101, 132, 0.2) 0%, rgba(255, 101, 132, 0) 70%);
+            border-radius: 50%;
+            filter: blur(30px);
+        }
+
+        .decoration-3 {
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 500px;
+            height: 500px;
+            background: radial-gradient(circle, rgba(0, 184, 148, 0.1) 0%, rgba(0, 184, 148, 0) 70%);
+            border-radius: 50%;
+            filter: blur(40px);
+        }
+
+        .music-note {
+            position: absolute;
+            font-size: 24px;
+            color: var(--primary);
+            opacity: 0;
+            animation: floatNote 3s ease-in-out infinite;
+        }
+
+        @keyframes floatNote {
+            0% { transform: translateY(0) rotate(0deg); opacity: 0; }
+            10% { opacity: 0.7; }
+            90% { opacity: 0.7; }
+            100% { transform: translateY(-100px) rotate(20deg); opacity: 0; }
+        }
+
+        /* === CUSTOM SCROLLBAR === */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: rgba(0, 0, 0, 0.05);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--primary);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--primary-dark);
+        }
+    </style>
+<script src="https://sites.super.myninja.ai/_assets/ninja-daytona-script.js"></script>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="logo-container">
+                <a href="#" class="logo">
+                    <span class="logo-icon">🎵</span>
+                    <span class="logo-text">LyricSync</span>
+                </a>
+                <div class="toggle-btn">
+                    <i class="fas fa-chevron-left"></i>
+                </div>
+            </div>
+            <ul class="menu">
+                <li class="menu-item">
+                    <a href="#" class="menu-link active" data-section="upload">
+                        <span class="menu-icon"><i class="fas fa-cloud-upload-alt"></i></span>
+                        <span class="menu-text">Upload Music</span>
+                    </a>
+                </li>
+                <li class="menu-item">
+                    <a href="#" class="menu-link" data-section="lyrics">
+                        <span class="menu-icon"><i class="fas fa-music"></i></span>
+                        <span class="menu-text">Lyrics</span>
+                    </a>
+                </li>
+                <li class="menu-item">
+                    <a href="#" class="menu-link" data-section="settings">
+                        <span class="menu-icon"><i class="fas fa-cog"></i></span>
+                        <span class="menu-text">Settings</span>
+                    </a>
+                </li>
+                <li class="menu-item">
+                    <a href="#" class="menu-link">
+                        <span class="menu-icon"><i class="fas fa-history"></i></span>
+                        <span class="menu-text">History</span>
+                    </a>
+                </li>
+                <li class="menu-item">
+                    <a href="#" class="menu-link">
+                        <span class="menu-icon"><i class="fas fa-question-circle"></i></span>
+                        <span class="menu-text">Help</span>
+                    </a>
+                </li>
+            </ul>
+            <div class="sidebar-footer">
+                <p>© 2025 RenzMc. All rights reserved.</p>
+                <div class="social-links">
+                    <a href="https://github.com/RenzMc" class="social-link" target="_blank">
+                        <i class="fab fa-github"></i>
+                    </a>
+                    <a href="https://www.youtube.com/@Renz-Mc" class="social-link" target="_blank">
+                        <i class="fab fa-youtube"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Decorative Elements -->
+            <div class="decoration decoration-1"></div>
+            <div class="decoration decoration-2"></div>
+            <div class="decoration decoration-3"></div>
+
+            <!-- Upload Section -->
+            <div class="upload-section" id="upload-section">
+                <div class="parallax-container">
+                    <div class="parallax-layer layer-3">
+                        <div class="upload-container fade-in">
+                            <h2 class="upload-title">Convert Music to Lyrics</h2>
+                            <p class="upload-description">Upload your audio file and we'll convert it to synchronized lyrics. Supported formats: MP3, OGG, WAV, M4A.</p>
+                            
+                            <div class="file-drop-area" id="drop-area">
+                                <span class="file-msg">Drag & drop your audio file here or click to browse</span>
+                                <input type="file" class="file-input" id="fileInput" accept=".mp3,.ogg,.wav,.m4a">
+                            </div>
+                            
+                            <div class="file-info" id="fileInfo">
+                                <div class="file-icon">
+                                    <i class="fas fa-music"></i>
+                                </div>
+                                <div class="file-details">
+                                    <div class="file-name" id="fileName">music.mp3</div>
+                                    <div class="file-size" id="fileSize">3.5 MB</div>
+                                </div>
+                                <button class="file-remove" id="fileRemove">
+                                    <i class="fas fa-times"></i>
+                                </button>
+                            </div>
+                            
+                            <button class="btn btn-convert" id="convertBtn">
+                                <span class="btn-icon"><i class="fas fa-sync-alt"></i></span>
+                                <span>Convert to Lyrics</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Loading Section -->
+            <div class="loading-section" id="loading-section">
+                <div class="loading-container">
+                    <h3 class="loading-title">Converting Your Music</h3>
+                    <div class="loading-animation">
+                        <div class="loading-circle"></div>
+                        <div class="loading-circle"></div>
+                        <div class="loading-circle"></div>
+                    </div>
+                    <div class="loading-text">Processing audio and generating lyrics...</div>
+                    <div class="loading-progress">
+                        <div class="loading-bar" id="loadingBar"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Settings Section -->
+            <div class="settings-section" id="settings-section">
+                <h2 class="lyrics-title">Settings</h2>
+                
+                <div class="settings-panel">
+                    <div class="settings-title">
+                        <i class="fas fa-sliders-h"></i> Lyrics Display Settings
+                    </div>
+                    
+                    <div class="settings-group">
+                        <div class="settings-label">Animation Style</div>
+                        <div class="animation-options">
+                            <div class="animation-option active" data-style="style-spotify">Spotify</div>
+                            <div class="animation-option" data-style="style-karaoke">Karaoke</div>
+                            <div class="animation-option" data-style="style-typing">Typing</div>
+                            <div class="animation-option" data-style="style-wave">Wave</div>
+                            <div class="animation-option" data-style="style-3d">3D</div>
+                        </div>
+                    </div>
+                    
+                    <div class="settings-group">
+                        <div class="settings-label">Highlight Color</div>
+                        <div class="animation-options">
+                            <div class="animation-option active" data-color="primary">Purple</div>
+                            <div class="animation-option" data-color="secondary">Pink</div>
+                            <div class="animation-option" data-color="success">Green</div>
+                            <div class="animation-option" data-color="warning">Yellow</div>
+                            <div class="animation-option" data-color="danger">Red</div>
+                        </div>
+                    </div>
+                    
+                    <div class="settings-group">
+                        <div class="settings-label">Font Size</div>
+                        <div class="animation-options">
+                            <div class="animation-option" data-size="small">Small</div>
+                            <div class="animation-option active" data-size="medium">Medium</div>
+                            <div class="animation-option" data-size="large">Large</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="settings-panel">
+                    <div class="settings-title">
+                        <i class="fas fa-volume-up"></i> Audio Settings
+                    </div>
+                    
+                    <div class="settings-group">
+                        <div class="settings-label">Playback Speed</div>
+                        <div class="animation-options">
+                            <div class="animation-option" data-speed="0.5">0.5x</div>
+                            <div class="animation-option" data-speed="0.75">0.75x</div>
+                            <div class="animation-option active" data-speed="1">1x</div>
+                            <div class="animation-option" data-speed="1.25">1.25x</div>
+                            <div class="animation-option" data-speed="1.5">1.5x</div>
+                            <div class="animation-option" data-speed="2">2x</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Lyrics Section -->
+            <div class="lyrics-section" id="lyrics-section">
+                <div class="lyrics-header">
+                    <h2 class="lyrics-title">Your Lyrics</h2>
+                    <div class="lyrics-actions">
+                        <button class="btn btn-sm" id="copyBtn">
+                            <i class="fas fa-copy"></i> Copy
+                        </button>
+                        <button class="btn btn-sm" id="downloadBtn">
+                            <i class="fas fa-download"></i> Download
+                        </button>
+                        <button class="btn btn-sm" id="settingsBtn">
+                            <i class="fas fa-cog"></i> Settings
+                        </button>
+                        <button class="btn btn-sm" id="newConversionBtn">
+                            <i class="fas fa-plus"></i> New
+                        </button>
+                    </div>
+                </div>
+
+                <div class="lyrics-player">
+                    <div class="audio-controls">
+                        <div class="audio-info">
+                            <div class="audio-thumbnail">
+                                <i class="fas fa-music"></i>
+                            </div>
+                            <div class="audio-details">
+                                <div class="audio-name" id="audioName">music.mp3</div>
+                                <div class="audio-duration" id="audioDuration">3:45</div>
+                            </div>
+                        </div>
+                        <div class="player-controls">
+                            <button class="player-btn" id="prevBtn">
+                                <i class="fas fa-step-backward"></i>
+                            </button>
+                            <button class="player-btn play-pause" id="playPauseBtn">
+                                <i class="fas fa-play" id="playIcon"></i>
+                            </button>
+                            <button class="player-btn" id="nextBtn">
+                                <i class="fas fa-step-forward"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="progress-container" id="progressContainer">
+                        <div class="progress-bar" id="progressBar"></div>
+                        <div class="progress-handle" id="progressHandle"></div>
+                    </div>
+                    <div class="time-display">
+                        <span id="currentTime">0:00</span>
+                        <span id="totalTime">0:00</span>
+                    </div>
+
+                    <div class="lyrics-container style-spotify" id="lyricsContainer">
+                        <!-- Lyrics lines will be added dynamically -->
+                    </div>
+                </div>
+
+                <div class="lyrics-text">
+                    <pre class="lyrics-text-content" id="lyricsText"></pre>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Font Awesome -->
+    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // DOM Elements
+            const sidebar = document.querySelector('.sidebar');
+            const toggleBtn = document.querySelector('.toggle-btn');
+            const menuLinks = document.querySelectorAll('.menu-link');
+            const uploadSection = document.getElementById('upload-section');
+            const loadingSection = document.getElementById('loading-section');
+            const lyricsSection = document.getElementById('lyrics-section');
+            const settingsSection = document.getElementById('settings-section');
+            const dropArea = document.getElementById('drop-area');
+            const fileInput = document.getElementById('fileInput');
+            const fileInfo = document.getElementById('fileInfo');
+            const fileName = document.getElementById('fileName');
+            const fileSize = document.getElementById('fileSize');
+            const fileRemove = document.getElementById('fileRemove');
+            const convertBtn = document.getElementById('convertBtn');
+            const loadingBar = document.getElementById('loadingBar');
+            const audioName = document.getElementById('audioName');
+            const audioDuration = document.getElementById('audioDuration');
+            const playPauseBtn = document.getElementById('playPauseBtn');
+            const playIcon = document.getElementById('playIcon');
+            const prevBtn = document.getElementById('prevBtn');
+            const nextBtn = document.getElementById('nextBtn');
+            const progressContainer = document.getElementById('progressContainer');
+            const progressBar = document.getElementById('progressBar');
+            const progressHandle = document.getElementById('progressHandle');
+            const currentTime = document.getElementById('currentTime');
+            const totalTime = document.getElementById('totalTime');
+            const lyricsContainer = document.getElementById('lyricsContainer');
+            const lyricsText = document.getElementById('lyricsText');
+            const copyBtn = document.getElementById('copyBtn');
+            const downloadBtn = document.getElementById('downloadBtn');
+            const settingsBtn = document.getElementById('settingsBtn');
+            const newConversionBtn = document.getElementById('newConversionBtn');
+            const animationOptions = document.querySelectorAll('.animation-option');
+
+            // Settings
+            let currentAnimationStyle = 'style-spotify';
+            let currentHighlightColor = 'primary';
+            let currentFontSize = 'medium';
+            let currentPlaybackSpeed = 1;
+
+            // Audio Context
+            let audioContext;
+            let audioBuffer;
+            let audioSource;
+            let startTime;
+            let pauseTime = 0;
+            let isPlaying = false;
+            let currentFile = null;
+            let lyrics = [];
+            let currentLyricIndex = 0;
+            let animationFrame;
+            let karaokeInterval;
+
+            // 3D Parallax Effect
+            document.addEventListener('mousemove', function(e) {
+                const parallaxLayers = document.querySelectorAll('.parallax-layer');
+                const mouseX = e.clientX / window.innerWidth - 0.5;
+                const mouseY = e.clientY / window.innerHeight - 0.5;
+                
+                parallaxLayers.forEach(layer => {
+                    const depth = parseFloat(layer.style.transform.match(/translateZ\(([^)]+)\)/)?.[1] || 0);
+                    const moveX = mouseX * depth * -10;
+                    const moveY = mouseY * depth * -10;
+                    layer.style.transform = `translateX(${moveX}px) translateY(${moveY}px) translateZ(${depth}px) scale(${1 + Math.abs(depth) / 50})`;
+                });
+            });
+
+            // Toggle Sidebar
+            toggleBtn.addEventListener('click', function() {
+                sidebar.classList.toggle('expanded');
+            });
+
+            // Menu Navigation
+            menuLinks.forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    
+                    // Remove active class from all links
+                    menuLinks.forEach(item => item.classList.remove('active'));
+                    
+                    // Add active class to clicked link
+                    this.classList.add('active');
+                    
+                    // Show corresponding section
+                    const section = this.getAttribute('data-section');
+                    if (section === 'upload') {
+                        uploadSection.style.display = 'flex';
+                        lyricsSection.style.display = 'none';
+                        settingsSection.style.display = 'none';
+                    } else if (section === 'lyrics') {
+                        if (currentFile) {
+                            uploadSection.style.display = 'none';
+                            lyricsSection.style.display = 'block';
+                            settingsSection.style.display = 'none';
+                        }
+                    } else if (section === 'settings') {
+                        uploadSection.style.display = 'none';
+                        lyricsSection.style.display = 'none';
+                        settingsSection.style.display = 'block';
+                    }
+                    
+                    // On mobile, collapse sidebar after selection
+                    if (window.innerWidth <= 768) {
+                        sidebar.classList.remove('expanded');
+                    }
+                });
+            });
+
+            // Settings button
+            settingsBtn.addEventListener('click', function() {
+                // Show settings section
+                uploadSection.style.display = 'none';
+                lyricsSection.style.display = 'none';
+                settingsSection.style.display = 'block';
+                
+                // Update menu
+                menuLinks.forEach(link => link.classList.remove('active'));
+                document.querySelector('[data-section="settings"]').classList.add('active');
+            });
+
+            // Animation style options
+            animationOptions.forEach(option => {
+                option.addEventListener('click', function() {
+                    const parent = this.parentElement;
+                    const options = parent.querySelectorAll('.animation-option');
+                    
+                    // Remove active class from all options in this group
+                    options.forEach(opt => opt.classList.remove('active'));
+                    
+                    // Add active class to clicked option
+                    this.classList.add('active');
+                    
+                    // Update settings based on option type
+                    if (this.dataset.style) {
+                        currentAnimationStyle = this.dataset.style;
+                        updateLyricsStyle();
+                    } else if (this.dataset.color) {
+                        currentHighlightColor = this.dataset.color;
+                        updateLyricsColor();
+                    } else if (this.dataset.size) {
+                        currentFontSize = this.dataset.size;
+                        updateLyricsSize();
+                    } else if (this.dataset.speed) {
+                        currentPlaybackSpeed = parseFloat(this.dataset.speed);
+                        updatePlaybackSpeed();
+                    }
+                });
+            });
+
+            // Update lyrics style
+            function updateLyricsStyle() {
+                // Remove all style classes
+                lyricsContainer.classList.remove('style-spotify', 'style-karaoke', 'style-typing', 'style-wave', 'style-3d');
+                
+                // Add selected style class
+                lyricsContainer.classList.add(currentAnimationStyle);
+                
+                // If karaoke style, prepare for character highlighting
+                if (currentAnimationStyle === 'style-karaoke') {
+                    prepareKaraokeHighlighting();
+                }
+                
+                // If wave style, prepare for character animation
+                if (currentAnimationStyle === 'style-wave') {
+                    prepareWaveAnimation();
+                }
+                
+                // Update active lyric to apply new style
+                if (currentLyricIndex >= 0) {
+                    updateActiveLyric(audioContext ? audioContext.currentTime - startTime : 0);
+                }
+            }
+
+            // Prepare karaoke highlighting
+            function prepareKaraokeHighlighting() {
+                const lyricElements = lyricsContainer.querySelectorAll('.lyrics-line');
+                
+                lyricElements.forEach(element => {
+                    const text = element.textContent;
+                    element.innerHTML = '';
+                    
+                    for (let i = 0; i < text.length; i++) {
+                        const span = document.createElement('span');
+                        span.textContent = text[i];
+                        span.classList.add('karaoke-char');
+                        element.appendChild(span);
+                    }
+                });
+            }
+
+            // Prepare wave animation
+            function prepareWaveAnimation() {
+                const lyricElements = lyricsContainer.querySelectorAll('.lyrics-line');
+                
+                lyricElements.forEach(element => {
+                    const text = element.textContent;
+                    element.innerHTML = '';
+                    
+                    for (let i = 0; i < text.length; i++) {
+                        const span = document.createElement('span');
+                        span.textContent = text[i];
+                        span.style.setProperty('--i', i);
+                        element.appendChild(span);
+                    }
+                });
+            }
+
+            // Update lyrics color
+            function updateLyricsColor() {
+                document.documentElement.style.setProperty('--primary', getColorValue(currentHighlightColor));
+                document.documentElement.style.setProperty('--primary-dark', getDarkerColorValue(currentHighlightColor));
+            }
+
+            // Get color value
+            function getColorValue(color) {
+                switch (color) {
+                    case 'primary': return '#6c63ff';
+                    case 'secondary': return '#ff6584';
+                    case 'success': return '#00b894';
+                    case 'warning': return '#fdcb6e';
+                    case 'danger': return '#d63031';
+                    default: return '#6c63ff';
+                }
+            }
+
+            // Get darker color value
+            function getDarkerColorValue(color) {
+                switch (color) {
+                    case 'primary': return '#5a52d5';
+                    case 'secondary': return '#e05470';
+                    case 'success': return '#00a382';
+                    case 'warning': return '#e0b561';
+                    case 'danger': return '#c42e2e';
+                    default: return '#5a52d5';
+                }
+            }
+
+            // Update lyrics size
+            function updateLyricsSize() {
+                const lyricElements = lyricsContainer.querySelectorAll('.lyrics-line');
+                
+                lyricElements.forEach(element => {
+                    // Remove existing size classes
+                    element.classList.remove('size-small', 'size-medium', 'size-large');
+                    
+                    // Add selected size class
+                    element.classList.add('size-' + currentFontSize);
+                    
+                    // Update font size based on selection
+                    if (currentFontSize === 'small') {
+                        element.style.fontSize = element.classList.contains('active') ? '18px' : '16px';
+                    } else if (currentFontSize === 'medium') {
+                        element.style.fontSize = element.classList.contains('active') ? '22px' : '18px';
+                    } else if (currentFontSize === 'large') {
+                        element.style.fontSize = element.classList.contains('active') ? '26px' : '22px';
+                    }
+                });
+            }
+
+            // Update playback speed
+            function updatePlaybackSpeed() {
+                if (audioSource && isPlaying) {
+                    // Store current position
+                    const currentPosition = audioContext.currentTime - startTime;
+                    
+                    // Stop current playback
+                    pauseAudio();
+                    
+                    // Create a new source with the new playback rate
+                    audioSource = audioContext.createBufferSource();
+                    audioSource.buffer = audioBuffer;
+                    audioSource.playbackRate.value = currentPlaybackSpeed;
+                    audioSource.connect(audioContext.destination);
+                    
+                    // Start from the current position
+                    audioSource.start(0, currentPosition);
+                    startTime = audioContext.currentTime - currentPosition;
+                    isPlaying = true;
+                    
+                    // Update UI
+                    playIcon.classList.remove('fa-play');
+                    playIcon.classList.add('fa-pause');
+                    
+                    // Start progress update
+                    updateProgress();
+                }
+            }
+
+            // File Drop Area
+            ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+                dropArea.addEventListener(eventName, preventDefaults, false);
+            });
+
+            function preventDefaults(e) {
+                e.preventDefault();
+                e.stopPropagation();
+            }
+
+            ['dragenter', 'dragover'].forEach(eventName => {
+                dropArea.addEventListener(eventName, highlight, false);
+            });
+
+            ['dragleave', 'drop'].forEach(eventName => {
+                dropArea.addEventListener(eventName, unhighlight, false);
+            });
+
+            function highlight() {
+                dropArea.classList.add('highlight');
+            }
+
+            function unhighlight() {
+                dropArea.classList.remove('highlight');
+            }
+
+            dropArea.addEventListener('drop', handleDrop, false);
+
+            function handleDrop(e) {
+                const dt = e.dataTransfer;
+                const files = dt.files;
+                handleFiles(files);
+            }
+
+            fileInput.addEventListener('change', function() {
+                handleFiles(this.files);
+            });
+
+            function handleFiles(files) {
+                if (files.length > 0) {
+                    const file = files[0];
+                    const fileType = file.type;
+                    
+                    // Check if file is audio
+                    if (!fileType.startsWith('audio/')) {
+                        alert('Please upload an audio file (MP3, OGG, WAV, M4A).');
+                        return;
+                    }
+                    
+                    // Check file extension
+                    const validExtensions = ['.mp3', '.ogg', '.wav', '.m4a'];
+                    const fileExtension = '.' + file.name.split('.').pop().toLowerCase();
+                    
+                    if (!validExtensions.includes(fileExtension)) {
+                        alert('Please upload a file with a valid extension (MP3, OGG, WAV, M4A).');
+                        return;
+                    }
+                    
+                    // Display file info
+                    currentFile = file;
+                    fileName.textContent = file.name;
+                    fileSize.textContent = formatFileSize(file.size);
+                    fileInfo.classList.add('show');
+                    convertBtn.classList.add('active');
+                    
+                    // Update audio name in lyrics section
+                    audioName.textContent = file.name;
+                }
+            }
+
+            function formatFileSize(bytes) {
+                if (bytes < 1024) return bytes + ' bytes';
+                else if (bytes < 1048576) return (bytes / 1024).toFixed(1) + ' KB';
+                else return (bytes / 1048576).toFixed(1) + ' MB';
+            }
+
+            // Remove file
+            fileRemove.addEventListener('click', function() {
+                currentFile = null;
+                fileInput.value = '';
+                fileInfo.classList.remove('show');
+                convertBtn.classList.remove('active');
+            });
+
+            // Convert button
+            convertBtn.addEventListener('click', function() {
+                if (!currentFile) return;
+                
+                // Show loading section
+                loadingSection.classList.add('show');
+                
+                // Simulate loading progress
+                let progress = 0;
+                const interval = setInterval(() => {
+                    progress += Math.random() * 5;
+                    if (progress >= 100) {
+                        progress = 100;
+                        clearInterval(interval);
+                        
+                        // Process the audio file
+                        processAudioFile(currentFile);
+                    }
+                    loadingBar.style.width = progress + '%';
+                }, 200);
+            });
+
+            // Process audio file
+            function processAudioFile(file) {
+                // Create a FileReader to read the file
+                const reader = new FileReader();
+                
+                reader.onload = function(e) {
+                    // Initialize Audio Context if not already done
+                    if (!audioContext) {
+                        audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                    }
+                    
+                    // Decode the audio data
+                    audioContext.decodeAudioData(e.target.result, function(buffer) {
+                        audioBuffer = buffer;
+                        
+                        // Generate lyrics (in a real app, this would use speech recognition)
+                        generateLyrics(buffer);
+                        
+                        // Set audio duration
+                        const duration = buffer.duration;
+                        audioDuration.textContent = formatTime(duration);
+                        totalTime.textContent = formatTime(duration);
+                        
+                        // Hide loading and show lyrics section
+                        setTimeout(() => {
+                            loadingSection.classList.remove('show');
+                            uploadSection.style.display = 'none';
+                            lyricsSection.classList.add('show');
+                            
+                            // Update menu
+                            menuLinks.forEach(link => link.classList.remove('active'));
+                            document.querySelector('[data-section="lyrics"]').classList.add('active');
+                            
+                            // Apply selected animation style
+                            updateLyricsStyle();
+                        }, 1000);
+                    }, function(err) {
+                        console.error('Error decoding audio file:', err);
+                        alert('Error processing audio file. Please try another file.');
+                        loadingSection.classList.remove('show');
+                    });
+                };
+                
+                reader.onerror = function() {
+                    console.error('Error reading file');
+                    alert('Error reading file. Please try again.');
+                    loadingSection.classList.remove('show');
+                };
+                
+                // Read the file as an ArrayBuffer
+                reader.readAsArrayBuffer(file);
+            }
+
+            // Generate lyrics (simulated)
+            function generateLyrics(buffer) {
+                // In a real app, this would use speech recognition
+                // Here we'll generate some dummy lyrics with timestamps
+                
+                const duration = buffer.duration;
+                const lyricsCount = Math.floor(duration / 5) + 5; // Approx one line every 5 seconds
+                
+                lyrics = [];
+                let fullText = '';
+                
+                // Sample lyrics phrases
+                const lyricPhrases = [
+                    "I'm walking on sunshine, woah",
+                    "And don't it feel good",
+                    "Hey, alright now",
+                    "And don't it feel good",
+                    "I used to think maybe you loved me, now baby I'm sure",
+                    "And I just can't wait till the day when you knock on my door",
+                    "Now every time I go for the mailbox, gotta hold myself down",
+                    "'Cause I just can't wait till you write me you're coming around",
+                    "I'm walking on sunshine, woah",
+                    "I'm walking on sunshine, woah",
+                    "I'm walking on sunshine, woah",
+                    "And don't it feel good",
+                    "Hey, alright now",
+                    "And don't it feel good",
+                    "I used to think maybe you loved me, now I know that it's true",
+                    "And I don't want to spend my whole life just a-waiting for you",
+                    "Now I don't want you back for the weekend, not back for a day",
+                    "I said, baby, I just want you back, and I want you to stay",
+                    "I'm walking on sunshine, woah",
+                    "I'm walking on sunshine, woah",
+                    "I'm walking on sunshine, woah",
+                    "And don't it feel good",
+                    "Hey, alright now",
+                    "And don't it feel good",
+                    "Walking on sunshine",
+                    "Walking on sunshine",
+                    "I feel alive, I feel the love, I feel the love that's really real",
+                    "I feel alive, I feel the love, I feel the love that's really real",
+                    "I'm on sunshine, baby, oh",
+                    "Oh, yeah, I'm on sunshine, baby",
+                    "I'm walking on sunshine, woah",
+                    "I'm walking on sunshine, woah",
+                    "I'm walking on sunshine, woah",
+                    "And don't it feel good",
+                    "Hey, alright now",
+                    "And don't it feel good",
+                    "I'll say it again now",
+                    "And don't it feel good"
+                ];
+                
+                // Generate lyrics with timestamps
+                for (let i = 0; i < lyricsCount; i++) {
+                    const startTime = i * (duration / lyricsCount);
+                    const endTime = (i + 1) * (duration / lyricsCount);
+                    const text = lyricPhrases[i % lyricPhrases.length];
+                    
+                    lyrics.push({
+                        startTime: startTime,
+                        endTime: endTime,
+                        text: text
+                    });
+                    
+                    fullText += text + '\n';
+                }
+                
+                // Display full lyrics text
+                lyricsText.textContent = fullText;
+                
+                // Create lyrics elements
+                lyricsContainer.innerHTML = '';
+                lyrics.forEach((line, index) => {
+                    const lyricElement = document.createElement('div');
+                    lyricElement.classList.add('lyrics-line');
+                    lyricElement.textContent = line.text;
+                    lyricElement.dataset.index = index;
+                    lyricsContainer.appendChild(lyricElement);
+                });
+            }
+
+            // Play/Pause button
+            playPauseBtn.addEventListener('click', function() {
+                if (!audioBuffer) return;
+                
+                if (isPlaying) {
+                    pauseAudio();
+                } else {
+                    playAudio();
+                }
+            });
+
+            // Play audio
+            function playAudio() {
+                if (!audioContext) {
+                    audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                }
+                
+                // Create a new source node
+                audioSource = audioContext.createBufferSource();
+                audioSource.buffer = audioBuffer;
+                audioSource.playbackRate.value = currentPlaybackSpeed;
+                audioSource.connect(audioContext.destination);
+                
+                // Start playback
+                const offset = pauseTime;
+                audioSource.start(0, offset);
+                startTime = audioContext.currentTime - offset;
+                isPlaying = true;
+                
+                // Update UI
+                playIcon.classList.remove('fa-play');
+                playIcon.classList.add('fa-pause');
+                
+                // Start progress update
+                updateProgress();
+            }
+
+            // Pause audio
+            function pauseAudio() {
+                if (audioSource) {
+                    audioSource.stop();
+                    pauseTime = audioContext.currentTime - startTime;
+                    isPlaying = false;
+                    
+                    // Update UI
+                    playIcon.classList.remove('fa-pause');
+                    playIcon.classList.add('fa-play');
+                    
+                    // Stop progress update
+                    cancelAnimationFrame(animationFrame);
+                    
+                    // Clear karaoke interval if active
+                    if (karaokeInterval) {
+                        clearInterval(karaokeInterval);
+                        karaokeInterval = null;
+                    }
+                }
+            }
+
+            // Update progress
+            function updateProgress() {
+                if (!isPlaying) return;
+                
+                const elapsed = audioContext.currentTime - startTime;
+                const duration = audioBuffer.duration;
+                const progress = (elapsed / duration) * 100;
+                
+                // Update progress bar
+                progressBar.style.width = progress + '%';
+                progressHandle.style.left = progress + '%';
+                
+                // Update time display
+                currentTime.textContent = formatTime(elapsed);
+                
+                // Update active lyrics
+                updateActiveLyric(elapsed);
+                
+                // Continue updating
+                animationFrame = requestAnimationFrame(updateProgress);
+                
+                // Check if playback has ended
+                if (elapsed >= duration) {
+                    pauseAudio();
+                    pauseTime = 0;
+                    progressBar.style.width = '0%';
+                    progressHandle.style.left = '0%';
+                    currentTime.textContent = '0:00';
+                }
+            }
+
+            // Update active lyric
+            function updateActiveLyric(currentTime) {
+                // Find the current lyric based on time
+                let activeIndex = -1;
+                
+                for (let i = 0; i < lyrics.length; i++) {
+                    if (currentTime >= lyrics[i].startTime && currentTime <= lyrics[i].endTime) {
+                        activeIndex = i;
+                        break;
+                    }
+                }
+                
+                // If no active lyric found, find the next one
+                if (activeIndex === -1) {
+                    for (let i = 0; i < lyrics.length; i++) {
+                        if (currentTime < lyrics[i].startTime) {
+                            activeIndex = i - 1;
+                            break;
+                        }
+                    }
+                }
+                
+                // Update UI if active lyric changed
+                if (activeIndex !== currentLyricIndex && activeIndex >= 0) {
+                    currentLyricIndex = activeIndex;
+                    
+                    // Remove active class from all lyrics
+                    const lyricElements = lyricsContainer.querySelectorAll('.lyrics-line');
+                    lyricElements.forEach(el => el.classList.remove('active'));
+                    
+                    // Add active class to current lyric
+                    const activeLyric = lyricsContainer.querySelector(`.lyrics-line[data-index="${activeIndex}"]`);
+                    if (activeLyric) {
+                        activeLyric.classList.add('active');
+                        
+                        // Apply animation based on style
+                        applyLyricAnimation(activeLyric);
+                        
+                        // Scroll to active lyric
+                        activeLyric.scrollIntoView({
+                            behavior: 'smooth',
+                            block: 'center'
+                        });
+                    }
+                }
+            }
+
+            // Apply lyric animation based on selected style
+            function applyLyricAnimation(lyricElement) {
+                // Clear any existing animation
+                if (karaokeInterval) {
+                    clearInterval(karaokeInterval);
+                    karaokeInterval = null;
+                }
+                
+                // Apply animation based on style
+                if (currentAnimationStyle === 'style-karaoke') {
+                    // For karaoke style, highlight characters progressively
+                    const chars = lyricElement.querySelectorAll('.karaoke-char');
+                    if (chars.length === 0) {
+                        // If characters aren't prepared yet, prepare them
+                        const text = lyricElement.textContent;
+                        lyricElement.innerHTML = '';
+                        
+                        for (let i = 0; i < text.length; i++) {
+                            const span = document.createElement('span');
+                            span.textContent = text[i];
+                            span.classList.add('karaoke-char');
+                            lyricElement.appendChild(span);
+                        }
+                    }
+                    
+                    // Get updated chars collection
+                    const updatedChars = lyricElement.querySelectorAll('.karaoke-char');
+                    
+                    // Calculate duration for highlighting
+                    const lyricIndex = parseInt(lyricElement.dataset.index);
+                    const lyricDuration = lyrics[lyricIndex].endTime - lyrics[lyricIndex].startTime;
+                    const charDuration = lyricDuration / updatedChars.length;
+                    
+                    // Start highlighting characters
+                    let charIndex = 0;
+                    karaokeInterval = setInterval(() => {
+                        if (charIndex < updatedChars.length) {
+                            updatedChars[charIndex].classList.add('highlight');
+                            charIndex++;
+                        } else {
+                            clearInterval(karaokeInterval);
+                        }
+                    }, charDuration * 1000);
+                } else if (currentAnimationStyle === 'style-typing') {
+                    // For typing style, the CSS animation handles it
+                    // Just make sure the text is reset
+                    const originalText = lyricElement.textContent;
+                    lyricElement.style.width = '0';
+                    
+                    // Trigger reflow
+                    void lyricElement.offsetWidth;
+                    
+                    // Start animation
+                    lyricElement.style.width = '100%';
+                } else if (currentAnimationStyle === 'style-wave') {
+                    // For wave style, the CSS animation handles it
+                    // Just make sure the spans are prepared
+                    const spans = lyricElement.querySelectorAll('span');
+                    if (spans.length === 0) {
+                        // If spans aren't prepared yet, prepare them
+                        prepareWaveAnimation();
+                    }
+                }
+            }
+
+            // Format time (seconds to MM:SS)
+            function formatTime(seconds) {
+                seconds = Math.floor(seconds);
+                const minutes = Math.floor(seconds / 60);
+                seconds = seconds % 60;
+                return minutes + ':' + (seconds < 10 ? '0' : '') + seconds;
+            }
+
+            // Progress bar click
+            progressContainer.addEventListener('click', function(e) {
+                if (!audioBuffer) return;
+                
+                const rect = this.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const width = rect.width;
+                const percentage = x / width;
+                
+                // Set new time
+                const duration = audioBuffer.duration;
+                const newTime = duration * percentage;
+                
+                // Update UI
+                progressBar.style.width = (percentage * 100) + '%';
+                progressHandle.style.left = (percentage * 100) + '%';
+                currentTime.textContent = formatTime(newTime);
+                
+                // Update playback
+                if (isPlaying) {
+                    pauseAudio();
+                }
+                
+                pauseTime = newTime;
+                
+                // If was playing, resume from new position
+                if (isPlaying) {
+                    playAudio();
+                } else {
+                    // Update active lyric manually
+                    updateActiveLyric(newTime);
+                }
+            });
+
+            // Previous button
+            prevBtn.addEventListener('click', function() {
+                if (!audioBuffer || currentLyricIndex <= 0) return;
+                
+                // Go to previous lyric
+                const prevIndex = currentLyricIndex - 1;
+                const prevTime = lyrics[prevIndex].startTime;
+                
+                // Update UI
+                const percentage = (prevTime / audioBuffer.duration) * 100;
+                progressBar.style.width = percentage + '%';
+                progressHandle.style.left = percentage + '%';
+                currentTime.textContent = formatTime(prevTime);
+                
+                // Update playback
+                if (isPlaying) {
+                    pauseAudio();
+                }
+                
+                pauseTime = prevTime;
+                
+                // If was playing, resume from new position
+                if (isPlaying) {
+                    playAudio();
+                } else {
+                    // Update active lyric manually
+                    updateActiveLyric(prevTime);
+                }
+            });
+
+            // Next button
+            nextBtn.addEventListener('click', function() {
+                if (!audioBuffer || currentLyricIndex >= lyrics.length - 1) return;
+                
+                // Go to next lyric
+                const nextIndex = currentLyricIndex + 1;
+                const nextTime = lyrics[nextIndex].startTime;
+                
+                // Update UI
+                const percentage = (nextTime / audioBuffer.duration) * 100;
+                progressBar.style.width = percentage + '%';
+                progressHandle.style.left = percentage + '%';
+                currentTime.textContent = formatTime(nextTime);
+                
+                // Update playback
+                if (isPlaying) {
+                    pauseAudio();
+                }
+                
+                pauseTime = nextTime;
+                
+                // If was playing, resume from new position
+                if (isPlaying) {
+                    playAudio();
+                } else {
+                    // Update active lyric manually
+                    updateActiveLyric(nextTime);
+                }
+            });
+
+            // Copy lyrics
+            copyBtn.addEventListener('click', function() {
+                const text = lyricsText.textContent;
+                navigator.clipboard.writeText(text).then(() => {
+                    // Show success message
+                    const originalText = this.innerHTML;
+                    this.innerHTML = '<i class="fas fa-check"></i> Copied!';
+                    
+                    setTimeout(() => {
+                        this.innerHTML = originalText;
+                    }, 2000);
+                });
+            });
+
+            // Download lyrics
+            downloadBtn.addEventListener('click', function() {
+                const text = lyricsText.textContent;
+                const filename = (currentFile ? currentFile.name.split('.')[0] : 'lyrics') + '.txt';
+                
+                const element = document.createElement('a');
+                element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
+                element.setAttribute('download', filename);
+                
+                element.style.display = 'none';
+                document.body.appendChild(element);
+                
+                element.click();
+                
+                document.body.removeChild(element);
+            });
+
+            // New conversion
+            newConversionBtn.addEventListener('click', function() {
+                // Reset state
+                currentFile = null;
+                fileInput.value = '';
+                fileInfo.classList.remove('show');
+                convertBtn.classList.remove('active');
+                
+                if (isPlaying) {
+                    pauseAudio();
+                }
+                
+                audioBuffer = null;
+                pauseTime = 0;
+                lyrics = [];
+                
+                // Reset UI
+                progressBar.style.width = '0%';
+                progressHandle.style.left = '0%';
+                currentTime.textContent = '0:00';
+                totalTime.textContent = '0:00';
+                lyricsContainer.innerHTML = '';
+                lyricsText.textContent = '';
+                
+                // Show upload section
+                uploadSection.style.display = 'flex';
+                lyricsSection.style.display = 'none';
+                settingsSection.style.display = 'none';
+                
+                // Update menu
+                menuLinks.forEach(link => link.classList.remove('active'));
+                document.querySelector('[data-section="upload"]').classList.add('active');
+            });
+
+            // Create floating music notes animation
+            function createMusicNotes() {
+                const container = document.querySelector('.app-container');
+                const notes = ['♪', '♫', '♬', '♩', '♭', '♮'];
+                
+                setInterval(() => {
+                    if (Math.random() > 0.7 && isPlaying) {
+                        const note = document.createElement('div');
+                        note.classList.add('music-note');
+                        note.textContent = notes[Math.floor(Math.random() * notes.length)];
+                        
+                        // Random position
+                        const x = Math.random() * container.offsetWidth;
+                        const y = container.offsetHeight - 50;
+                        
+                        note.style.left = x + 'px';
+                        note.style.bottom = '50px';
+                        
+                        // Random animation duration and delay
+                        const duration = 2 + Math.random() * 3;
+                        const delay = Math.random();
+                        
+                        note.style.animationDuration = duration + 's';
+                        note.style.animationDelay = delay + 's';
+                        
+                        container.appendChild(note);
+                        
+                        // Remove note after animation
+                        setTimeout(() => {
+                            container.removeChild(note);
+                        }, (duration + delay) * 1000);
+                    }
+                }, 300);
+            }
+            
+            createMusicNotes();
+
+            // Handle window resize
+            window.addEventListener('resize', function() {
+                if (window.innerWidth <= 768) {
+                    sidebar.classList.remove('expanded');
+                }
+            });
+
+            // Initialize
+            if (window.innerWidth <= 768) {
+                sidebar.classList.remove('expanded');
+            } else {
+                sidebar.classList.add('expanded');
+            }
+        });
+    </script>
+</body>
+</html>
